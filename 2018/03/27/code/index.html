@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>encode()和decode()函数 | 熙风</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">encode()和decode()函数</h1><a id="logo" href="/.">熙风</a><p class="description">熙风的博客</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">encode()和decode()函数</h1><div class="post-meta">Mar 27, 2018<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><div class="post-content"><p><strong>最近在写python的时候在windows下和linux下执行一些命令遇到一些中文显示问题，这些字符集的错误，特地上网找了找关于这些的总结</strong><br><a id="more"></a></p>
+<h1 id="1-系统，文件中的编码设置和查看"><a href="#1-系统，文件中的编码设置和查看" class="headerlink" title="1.系统，文件中的编码设置和查看"></a>1.系统，文件中的编码设置和查看</h1><ul>
+<li>linux中vim下查看文件编码的命令 set fileencoding。</li>
+<li>一般情况下window默认编码gbk，linux默认编码utf8。</li>
+<li>python编程中 系统编码，python编码，文件编码 的概念。<ul>
+<li>系统编码：默认写源码的编辑器的编码方式。它代表源码文件内的所有内容都是根据词方式编码成二进制码流。存入到磁盘中的。linux下通过locale命令查看。</li>
+<li>python编码：指python内设置的解码方式。如果不设定的话，python默认的是ascii解码方式。</li>
+</ul>
+<ul>
+<li>设定方法：在源码文件开头（一定是第一行）：#-<em>-coding:UTF-8-</em>-，源码文件的设置解码方式是UTF-8。</li>
+</ul>
+</li>
+</ul>
+<h1 id="2-python中encode-和decode-函数"><a href="#2-python中encode-和decode-函数" class="headerlink" title="2.python中encode()和decode()函数"></a>2.python中encode()和decode()函数</h1><p>从英文意思上看，encode和decode分别指编码和解码，在python中，Unicode类型是作为编码的基础类型，即如下图：<br><img src="http://odmuvqzgo.bkt.clouddn.com/code.png" alt="eclipse"></p>
+<ul>
+<li>以下为在linux平台，默认utf-8：</li>
+<li>用  ‘中文’（UTF-8）—-&gt; ‘中文’（Unicode）—-&gt; ‘中文’（GBK）：<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; u = <span class="string">'中文'</span></div><div class="line">&gt;&gt;&gt; <span class="built_in">type</span>(u)</div><div class="line">&lt;<span class="built_in">type</span> <span class="string">'str'</span>&gt;</div><div class="line"></div><div class="line">&gt;&gt;&gt; str1</div><div class="line">u<span class="string">'\u4e2d\u6587'</span></div><div class="line"></div><div class="line">&gt;&gt;&gt; str1 = u.decode(<span class="string">'utf-8'</span>)</div><div class="line">&gt;&gt;&gt; <span class="built_in">type</span>(str1)</div><div class="line">&lt;<span class="built_in">type</span> <span class="string">'unicode'</span>&gt;</div><div class="line"></div><div class="line">&gt;&gt;&gt; u</div><div class="line"><span class="string">'\xe4\xb8\xad\xe6\x96\x87'</span></div><div class="line"></div><div class="line">&gt;&gt;&gt; str2 = str1.encode(<span class="string">'gbk'</span>)</div><div class="line">&gt;&gt;&gt; <span class="built_in">type</span>(str2)</div><div class="line">&lt;<span class="built_in">type</span> <span class="string">'str'</span>&gt;</div><div class="line"></div><div class="line">&gt;&gt;&gt; str2</div><div class="line"><span class="string">'\xd6\xd0\xce\xc4'</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h1 id="3-关于编码ASCII、Unicode、GBK、UTF-8等"><a href="#3-关于编码ASCII、Unicode、GBK、UTF-8等" class="headerlink" title="3.关于编码ASCII、Unicode、GBK、UTF-8等"></a>3.关于编码ASCII、Unicode、GBK、UTF-8等</h1><ul>
+<li>ASCII码是美国早期制定的编码规范，只能表示128个字符，包括英文字符、阿拉伯数字、西文字符以及32个控制字符。<ul>
+<li>扩展ASCII码，简单而言，扩展ASCII码的出现是因为ASCII不够用，所以向ASCII表继续扩充到256个符号。</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Unicode准确来说不是编码格式，而是字符集。这个字符集包含了世界上目前所有的符号。<br>另外，在原来有些字符可以用一个字节即8位来表示的，在Unicode将所有字符的长度全部统一为16位，因此字符是定长的。</li>
+</ul>
+<ul>
+<li><p>GB2312，在ASCII码表的基础上，小于127的字符意义与原来相同；而将两个大于127的字节连在一起，来表示汉字，前一个字节从0xA1（161）到0xF7（247）共87个字节，称为高字节，后一个字节从0xA1（161）到0xFE（254）共94个字节，称为低字节，两者可组合出约8000种组合，用来表示6763个简体汉字、数学符号、罗马字母、日文字等。<br>在重新编码的数字、标点、字母是两字节长的编码，这些称为“全角”字符；而原来在ASCII码表的127以下的称为“半角”字符。</p>
+<ul>
+<li>GBK，简单而言，GBK是对GB2312的进一步扩展（K是汉语拼音kuo zhan（扩展）中“扩”字的声母）。</li>
+<li>GB18030，GB18030支持少数民族的汉字，也包含了繁体汉字和日韩汉字。</li>
+</ul>
+</li>
+<li><p>UTF是在互联网上使用最广的一种Unicode的实现方式，我们最常用的是UTF-8，表示每次8个位传输数据，除此之外还有UTF-16。 </p>
+</li>
+</ul>
+<p>总结：</p>
+<ul>
+<li>中国人民通过对 ASCII 编码的中文扩充改造，产生了 GB2312 编码。</li>
+<li>汉字实在是太多了，包括繁体和各种字符，于是产生了 GBK 编码</li>
+<li>中国是个多民族国家，各个民族几乎都有自己独立的语言系统，为了表示那些字符，继续把 GBK 编码扩充为 GB18030 编码。</li>
+<li>每个国家都像中国一样，把自己的语言编码，于是出现了各种各样的编码，如果你不安装相应的编码，就无法解释相应编码想表达的内容。</li>
+<li>有个叫 ISO 的组织看不下去了。他们一起创造了一种编码 UNICODE ，这种编码非常大，大到可以容纳世界上任何一个文字和标志。所以只要电脑上有 UNICODE 这种编码系统，无论是全球哪种文字，只需要保存文件的时候，保存成 UNICODE 编码就可以被其他电脑正常解释</li>
+<li>UNICODE 在网络传输中，出现了两个标准 UTF-8 和 UTF-16，分别每次传输 8个位和 16个位。</li>
+<li>既然有了这么好的编码格式，为什么还要用GBK等呢，因为UTF-8等格式体积大，占用电脑空间比较大，如果使用群体大部分使用中文，GBK也是可以的。</li>
+</ul>
+</div><div class="tags"><a href="/tags/python/">python</a></div><div class="post-nav"><a href="/2018/03/26/requests/" class="next">requests 模块</a></div><div id="valine"></div><head><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine/dist/Valine.min.js"></script></head><body><div id="comment"></div></body><script>new Valine({
+    el: '#comment', 
+    verify: true,
+    notify: true,
+    appId: 'UDU8rUAXRYDzaX1dalrUsI7I-gzGzoHsz', 
+    appKey: 'LaJ40koNa7W0UnihFodxDnsx', 
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!'
+});
+
+
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/linux-nginx/" style="font-size: 15px;">linux nginx</a> <a href="/tags/日常/" style="font-size: 15px;">日常</a> <a href="/tags/awk/" style="font-size: 15px;">awk</a> <a href="/tags/阅读/" style="font-size: 15px;">阅读</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/github/" style="font-size: 15px;">github</a> <a href="/tags/nodejs/" style="font-size: 15px;">nodejs</a> <a href="/tags/vpn/" style="font-size: 15px;">vpn</a> <a href="/tags/ss/" style="font-size: 15px;">ss</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/sar/" style="font-size: 15px;">sar</a> <a href="/tags/sed/" style="font-size: 15px;">sed</a> <a href="/tags/squid/" style="font-size: 15px;">squid</a> <a href="/tags/shadowsocks/" style="font-size: 15px;">shadowsocks</a> <a href="/tags/tomcat/" style="font-size: 15px;">tomcat</a> <a href="/tags/terminal/" style="font-size: 15px;">terminal</a> <a href="/tags/vim/" style="font-size: 15px;">vim</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/03/27/code/">encode()和decode()函数</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/26/requests/">requests 模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/04/essay/">白夜行</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/24/sar/">sar</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/18/awk/">awk</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/04/Economics/">理财</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/26/sed/">sed</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/12/minimalism/">极简主义</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/25/filesystem/">filesystem</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/19/food/">food</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">熙风.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
