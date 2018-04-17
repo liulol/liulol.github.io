@@ -1,0 +1,147 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>mongodb和pymongo模块 | 熙风</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">mongodb和pymongo模块</h1><a id="logo" href="/.">熙风</a><p class="description">熙风的博客</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">mongodb和pymongo模块</h1><div class="post-meta">Mar 29, 2018<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><div class="post-content"><p><strong>最近在写一个爬虫，使用的是MongoDB数据库，总结和简单记录下使用的方法。</strong><br><a id="more"></a></p>
+<ul>
+<li>MongoDB 是一个基于分布式文件存储的数据库。</li>
+<li>由 C++ 语言编写。</li>
+<li>旨在为 WEB 应用提供可扩展的高性能数据存储解决方案。</li>
+<li>MongoDB 是一个介于关系数据库和非关系数据库之间的产品，是非关系数据库当中功能最丰富，最像关系数据库的。</li>
+</ul>
+<h1 id="1-创建、查看、删除数据库"><a href="#1-创建、查看、删除数据库" class="headerlink" title="1.创建、查看、删除数据库"></a>1.创建、查看、删除数据库</h1><h2 id="使用use来创建（当数据库不存在），若存在就选择该库"><a href="#使用use来创建（当数据库不存在），若存在就选择该库" class="headerlink" title="使用use来创建（当数据库不存在），若存在就选择该库"></a>使用use来创建（当数据库不存在），若存在就选择该库</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&gt; use xiwind</div><div class="line">switched to db xiwind</div><div class="line">&gt; db</div><div class="line">xiwind</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+<h2 id="如果你想查看所有数据库，可以使用-show-dbs-命令："><a href="#如果你想查看所有数据库，可以使用-show-dbs-命令：" class="headerlink" title="如果你想查看所有数据库，可以使用 show dbs 命令："></a>如果你想查看所有数据库，可以使用 show dbs 命令：</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; show dbs</div><div class="line"><span class="built_in">local</span>  0.078GB</div><div class="line"><span class="built_in">test</span>   0.078GB</div><div class="line">&gt;</div></pre></td></tr></table></figure>
+<h2 id="删除了数据库-xiwind"><a href="#删除了数据库-xiwind" class="headerlink" title="删除了数据库 xiwind"></a>删除了数据库 xiwind</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; use xiwind</div><div class="line">switched to db xiwind</div><div class="line">&gt; db.dropDatabase()</div><div class="line">&#123; <span class="string">"dropped"</span> : <span class="string">"xiwind"</span>, <span class="string">"ok"</span> : 1 &#125;</div></pre></td></tr></table></figure>
+<h1 id="2-创建、查询、删除集合"><a href="#2-创建、查询、删除集合" class="headerlink" title="2.创建、查询、删除集合"></a>2.创建、查询、删除集合</h1><h2 id="在-test-数据库中创建-col-集合"><a href="#在-test-数据库中创建-col-集合" class="headerlink" title="在 test 数据库中创建 col 集合"></a>在 test 数据库中创建 col 集合</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt; use <span class="built_in">test</span></div><div class="line">switched to db <span class="built_in">test</span></div><div class="line">&gt; db.createCollection(<span class="string">"col"</span>)</div><div class="line">&#123; <span class="string">"ok"</span> : 1 &#125;</div></pre></td></tr></table></figure>
+<h2 id="查看已有集合，可以使用-show-collections-命令"><a href="#查看已有集合，可以使用-show-collections-命令" class="headerlink" title="查看已有集合，可以使用 show collections 命令"></a>查看已有集合，可以使用 show collections 命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&gt; show collections</div><div class="line">col</div><div class="line">system.indexes</div></pre></td></tr></table></figure>
+<h2 id="删除集合col"><a href="#删除集合col" class="headerlink" title="删除集合col"></a>删除集合col</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;db.col.drop()</div><div class="line"><span class="literal">true</span></div></pre></td></tr></table></figure>
+<h1 id="3-文档插入、删除、更新、查询操作"><a href="#3-文档插入、删除、更新、查询操作" class="headerlink" title="3.文档插入、删除、更新、查询操作"></a>3.文档插入、删除、更新、查询操作</h1><h2 id="在col集合中插入文档"><a href="#在col集合中插入文档" class="headerlink" title="在col集合中插入文档"></a>在col集合中插入文档</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&gt; db.col.insert(&#123;title: <span class="string">'MongoDB'</span>, </div><div class="line">     description: <span class="string">'MongoDB 是一个 Nosql 数据库'</span>,</div><div class="line">     url: <span class="string">'http://xiwind.com'</span>,</div><div class="line">     tags: [<span class="string">'mongodb'</span>, <span class="string">'database'</span>, <span class="string">'NoSQL'</span>],</div><div class="line">     likes: 100</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h2 id="在col集合中查询文档"><a href="#在col集合中查询文档" class="headerlink" title="在col集合中查询文档"></a>在col集合中查询文档</h2><ul>
+<li>find()查询所有，可以加条件</li>
+<li>find_one()只返回一个结果</li>
+<li>pretty()以易读的方式来读取数据<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&gt; db.col.find()</div><div class="line">&#123; <span class="string">"_id"</span> : ObjectId(<span class="string">"56064886ade2f21f36b03134"</span>), <span class="string">"title"</span> : <span class="string">"MongoDB"</span>, <span class="string">"description"</span> : <span class="string">"MongoDB 是一个 Nosql 数据库"</span>, <span class="string">"url"</span> : <span class="string">"http://xiwind.com"</span>, <span class="string">"tags"</span> : [ <span class="string">"mongodb"</span>, <span class="string">"database"</span>, <span class="string">"NoSQL"</span> ], <span class="string">"likes"</span> : 100 &#125;</div><div class="line">&gt; db.col.find().pretty()</div><div class="line">&#123;</div><div class="line">        <span class="string">"_id"</span> : ObjectId(<span class="string">"56063f17ade2f21f36b03133"</span>),</div><div class="line">        <span class="string">"title"</span> : <span class="string">"MongoDB"</span>,</div><div class="line">        <span class="string">"description"</span> : <span class="string">"MongoDB 是一个 Nosql 数据库"</span>,</div><div class="line">        <span class="string">"url"</span> : <span class="string">"http://xiwind.com"</span>,</div><div class="line">        <span class="string">"tags"</span> : [</div><div class="line">                <span class="string">"mongodb"</span>,</div><div class="line">                <span class="string">"database"</span>,</div><div class="line">                <span class="string">"NoSQL"</span></div><div class="line">        ],</div><div class="line">        <span class="string">"likes"</span> : 100</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="条件查询表达式："><a href="#条件查询表达式：" class="headerlink" title="条件查询表达式："></a>条件查询表达式：</h3><table>
+<thead>
+<tr>
+<th>操作</th>
+<th style="text-align:center">格式</th>
+<th style="text-align:right">范例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>等于</td>
+<td style="text-align:center">{key:value}</td>
+<td style="text-align:right">db.col.find({“title” : “MongoDB”}).pretty()</td>
+</tr>
+<tr>
+<td>小于</td>
+<td style="text-align:center">{key:{$lt:value}}</td>
+<td style="text-align:right">db.col.find({“likes”:{$lt:50}}).pretty()</td>
+</tr>
+<tr>
+<td>小于或等于</td>
+<td style="text-align:center">{&lt;key&gt;:{$lte:&lt;value&gt;}}</td>
+<td style="text-align:right">db.col.find({“likes”:{$lte:50}}).pretty()</td>
+</tr>
+<tr>
+<td>大于</td>
+<td style="text-align:center">{key:{$gt:value}}</td>
+<td style="text-align:right">db.col.find({“likes”:{$gt:50}}).pretty()</td>
+</tr>
+<tr>
+<td>大于或等于</td>
+<td style="text-align:center">{key:{$gte:value}}</td>
+<td style="text-align:right">db.col.find({“likes”:{$gte:50}}).pretty()</td>
+</tr>
+<tr>
+<td>不等于</td>
+<td style="text-align:center">{key:{$ne:value}}</td>
+<td style="text-align:right">db.col.find({“likes”:{$ne:50}}).pretty()</td>
+</tr>
+<tr>
+<td>与</td>
+<td style="text-align:center">{key1:value1, key2:value2}</td>
+<td style="text-align:right">db.col.find({“title”:”MongoDB”,”likes”:100}).pretty</td>
+</tr>
+<tr>
+<td>或</td>
+<td style="text-align:center">{$or:[{key1: value1}, {key2:value2}]}</td>
+<td style="text-align:right">db.col.find(\$or:[{“title”:”MongoDB”, “likes”:100}]).pretty</td>
+</tr>
+<tr>
+<td>正则</td>
+<td style="text-align:center">{key:{$regex:regex}}</td>
+<td style="text-align:right">db.col.find({“title”:{\$regex:”^M.*”}}).pretty</td>
+</tr>
+</tbody>
+</table>
+<h2 id="在col集合中更新文档"><a href="#在col集合中更新文档" class="headerlink" title="在col集合中更新文档"></a>在col集合中更新文档</h2><h3 id="更新指定文档内容："><a href="#更新指定文档内容：" class="headerlink" title="更新指定文档内容："></a>更新指定文档内容：</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&gt; db.col.update(&#123;<span class="string">'title'</span>:<span class="string">'MongoDB'</span>&#125;,&#123;<span class="variable">$set</span>:&#123;<span class="string">'title'</span>:<span class="string">'MongoDB 教程'</span>&#125;&#125;)</div></pre></td></tr></table></figure>
+<h3 id="传入的文档替换已有文档："><a href="#传入的文档替换已有文档：" class="headerlink" title="传入的文档替换已有文档："></a>传入的文档替换已有文档：</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&gt;db.col.save(&#123;</div><div class="line">    <span class="string">"_id"</span> : ObjectId(<span class="string">"56064f89ade2f21f36b03136"</span>),</div><div class="line">    <span class="string">"title"</span> : <span class="string">"MongoDB"</span>,</div><div class="line">    <span class="string">"description"</span> : <span class="string">"MongoDB 是一个 Nosql 数据库"</span>,</div><div class="line">    <span class="string">"url"</span> : <span class="string">"http://xiwind.com"</span>,</div><div class="line">    <span class="string">"tags"</span> : [</div><div class="line">            <span class="string">"mongodb"</span>,</div><div class="line">            <span class="string">"NoSQL"</span></div><div class="line">    ],</div><div class="line">    <span class="string">"likes"</span> : 110</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h2 id="在col集合中删除文档"><a href="#在col集合中删除文档" class="headerlink" title="在col集合中删除文档"></a>在col集合中删除文档</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;db.col.remove(&#123;<span class="string">'title'</span>:<span class="string">'MongoDB 教程'</span>&#125;)</div><div class="line">WriteResult(&#123; <span class="string">"nRemoved"</span> : 2 &#125;)           <span class="comment"># 删除了两条数据</span></div></pre></td></tr></table></figure>
+<h1 id="pymongo-模块的使用"><a href="#pymongo-模块的使用" class="headerlink" title="pymongo 模块的使用"></a>pymongo 模块的使用</h1><h2 id="连接mongodb的数据库"><a href="#连接mongodb的数据库" class="headerlink" title="连接mongodb的数据库"></a>连接mongodb的数据库</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line">import pymongo</div><div class="line">import sys</div><div class="line">import traceback    </div><div class="line"></div><div class="line">MONGODB_CONFIG = &#123;</div><div class="line">    <span class="string">'host'</span>: <span class="string">'127.0.0.1'</span>,</div><div class="line">    <span class="string">'port'</span>: 27017,</div><div class="line">    <span class="string">'db_name'</span>: <span class="string">'dbs'</span>,</div><div class="line">    <span class="string">'username'</span>: None,</div><div class="line">    <span class="string">'password'</span>: None</div><div class="line">&#125;</div><div class="line"></div><div class="line">class MongoConn(object):</div><div class="line"></div><div class="line">    def __init__(self):</div><div class="line">        <span class="comment"># connect db</span></div><div class="line">        try:</div><div class="line">            self.conn = pymongo.MongoClient(MONGODB_CONFIG[<span class="string">'host'</span>], MONGODB_CONFIG[<span class="string">'port'</span>])</div><div class="line">            self.db = self.conn[MONGODB_CONFIG[<span class="string">'db_name'</span>]]  <span class="comment"># connect db</span></div><div class="line">            self.username=MONGODB_CONFIG[<span class="string">'username'</span>]</div><div class="line">            self.password=MONGODB_CONFIG[<span class="string">'password'</span>]           </div><div class="line">            <span class="keyword">if</span> self.username and self.password:</div><div class="line">                self.connected = self.db.authenticate(self.username, self.password)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                self.connected = True</div><div class="line">        except Exception:</div><div class="line">            <span class="built_in">print</span> traceback.format_exc()</div><div class="line">            <span class="built_in">print</span> <span class="string">'Connect Statics Database Fail.'</span></div><div class="line">            sys.exit(1)</div></pre></td></tr></table></figure>
+<h2 id="两种指定集合方式"><a href="#两种指定集合方式" class="headerlink" title="两种指定集合方式"></a>两种指定集合方式</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">conn = MongoConn()</div><div class="line">collection = conn.db[<span class="built_in">test</span>]</div><div class="line">collection2 = conn.db.test</div></pre></td></tr></table></figure>
+<h2 id="插入数据"><a href="#插入数据" class="headerlink" title="插入数据"></a>插入数据</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">student1 = &#123;</div><div class="line"> <span class="string">'id'</span>: <span class="string">'20170101'</span>,</div><div class="line"> <span class="string">'name'</span>: <span class="string">'Jordan'</span>,</div><div class="line"> <span class="string">'age'</span>: 20,</div><div class="line"> <span class="string">'gender'</span>: <span class="string">'male'</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">student2 = &#123;</div><div class="line"> <span class="string">'id'</span>: <span class="string">'20170202'</span>,</div><div class="line"> <span class="string">'name'</span>: <span class="string">'Mike'</span>,</div><div class="line"> <span class="string">'age'</span>: 21,</div><div class="line"> <span class="string">'gender'</span>: <span class="string">'male'</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment"># 插入一条数据</span></div><div class="line">result = collection.insert_one(student1)</div><div class="line"></div><div class="line"><span class="comment"># 插入多条数据</span></div><div class="line">result = collection.insert_many([student1, student2])</div></pre></td></tr></table></figure>
+<h2 id="查询数据"><a href="#查询数据" class="headerlink" title="查询数据"></a>查询数据</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">result = collection.find_one(&#123;<span class="string">'name'</span>: <span class="string">'Mike'</span>&#125;)</div><div class="line"></div><div class="line"><span class="comment"># 指定范围，年龄大于20</span></div><div class="line">results = collection.find(&#123;<span class="string">'age'</span>: &#123;<span class="string">'$gt'</span>: 20&#125;&#125;)</div></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th style="text-align:center">含义</th>
+<th style="text-align:right">范例</th>
+<th style="text-align:right">示例含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$regex</td>
+<td style="text-align:center">匹配正则</td>
+<td style="text-align:right">{‘name’: {‘$regex’: ‘^M.*’}}</td>
+<td style="text-align:right">name以M开头</td>
+</tr>
+<tr>
+<td>$exists</td>
+<td style="text-align:center">属性是否存在</td>
+<td style="text-align:right">{‘name’: {‘$exists’: True}}</td>
+<td style="text-align:right">name属性存在</td>
+</tr>
+<tr>
+<td>$type</td>
+<td style="text-align:center">类型判断</td>
+<td style="text-align:right">{‘age’: {‘$type’: ‘int’}}</td>
+<td style="text-align:right">age的类型为int</td>
+</tr>
+<tr>
+<td>$mod</td>
+<td style="text-align:center">数字模操作</td>
+<td style="text-align:right">{‘age’: {‘$mod’: [5, 0]}}</td>
+<td style="text-align:right">年龄模5余0</td>
+</tr>
+<tr>
+<td>$text</td>
+<td style="text-align:center">文本查询</td>
+<td style="text-align:right">{‘$text’: {‘$search’: ‘Mike’}}</td>
+<td style="text-align:right">text类型的属性中包含Mike字符串</td>
+</tr>
+<tr>
+<td>$where</td>
+<td style="text-align:center">高级条件查询</td>
+<td style="text-align:right">{‘$where’: ‘obj.fans_count == obj.follows_count’}</td>
+<td style="text-align:right">自身粉丝数等于关注数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="计数"><a href="#计数" class="headerlink" title="计数"></a>计数</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 统计查询结果有多少条数据</span></div><div class="line">count = collection.find().count()</div></pre></td></tr></table></figure>
+<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># DESCENDING -- 降序</span></div><div class="line"><span class="comment"># ASCENDING -- 升序</span></div><div class="line">results = collection.find().sort(<span class="string">'age'</span>, pymongo.ASCENDING)</div></pre></td></tr></table></figure>
+<h2 id="偏移"><a href="#偏移" class="headerlink" title="偏移"></a>偏移</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># skip() 忽略前几个放回结果，取后面</span></div><div class="line">results = collection.find().sort(<span class="string">'name'</span>, pymongo.ASCENDING).skip(2)</div><div class="line"></div><div class="line"><span class="comment"># limit() 截取前几个返回结果</span></div><div class="line">results = collection.find().sort(<span class="string">'name'</span>, pymongo.ASCENDING).<span class="built_in">limit</span>(2)</div></pre></td></tr></table></figure>
+<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># update_one 更新一条数据，update_many 更新多条数据</span></div><div class="line">condition = &#123;<span class="string">'name'</span>: <span class="string">'Kevin'</span>&#125;</div><div class="line">student = collection.find_one(condition)</div><div class="line">student[<span class="string">'age'</span>] = 26</div><div class="line">result = collection.update_one(condition, &#123;<span class="string">'$set'</span>: student&#125;)</div></pre></td></tr></table></figure>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">result = collection.remove(&#123;<span class="string">'name'</span>: <span class="string">'Kevin'</span>&#125;)</div></pre></td></tr></table></figure>
+</div><div class="tags"><a href="/tags/python/">python</a></div><div class="post-nav"><a href="/2018/04/17/saltstack/" class="pre">saltstack</a><a href="/2018/03/27/code/" class="next">encode()和decode()函数</a></div><div id="valine"></div><head><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine/dist/Valine.min.js"></script></head><body><div id="comment"></div></body><script>new Valine({
+    el: '#comment', 
+    verify: true,
+    notify: true,
+    appId: 'UDU8rUAXRYDzaX1dalrUsI7I-gzGzoHsz', 
+    appKey: 'LaJ40koNa7W0UnihFodxDnsx', 
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!'
+});
+
+
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/nodejs/" style="font-size: 15px;">nodejs</a> <a href="/tags/日常/" style="font-size: 15px;">日常</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/awk/" style="font-size: 15px;">awk</a> <a href="/tags/阅读/" style="font-size: 15px;">阅读</a> <a href="/tags/github/" style="font-size: 15px;">github</a> <a href="/tags/vpn/" style="font-size: 15px;">vpn</a> <a href="/tags/linux-nginx/" style="font-size: 15px;">linux nginx</a> <a href="/tags/ss/" style="font-size: 15px;">ss</a> <a href="/tags/sar/" style="font-size: 15px;">sar</a> <a href="/tags/sed/" style="font-size: 15px;">sed</a> <a href="/tags/shadowsocks/" style="font-size: 15px;">shadowsocks</a> <a href="/tags/squid/" style="font-size: 15px;">squid</a> <a href="/tags/tomcat/" style="font-size: 15px;">tomcat</a> <a href="/tags/terminal/" style="font-size: 15px;">terminal</a> <a href="/tags/vim/" style="font-size: 15px;">vim</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/saltstack/" style="font-size: 15px;">saltstack</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/04/17/saltstack/">saltstack</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/29/mongdb/">mongodb和pymongo模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/27/code/">encode()和decode()函数</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/26/requests/">requests 模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/04/essay/">白夜行</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/24/sar/">sar</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/18/awk/">awk</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/04/Economics/">理财</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/26/sed/">sed</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/12/minimalism/">极简主义</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">熙风.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
