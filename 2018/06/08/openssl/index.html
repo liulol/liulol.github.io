@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>openssl | 熙风</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/7.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">openssl</h1><a id="logo" href="/.">熙风</a><p class="description">熙风的博客</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">openssl</h1><div class="post-meta">Jun 8, 2018<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><div class="post-content"><p><strong>在配置nginx中的https证书中，偶然对ssl证书进行了一些了解，这里简单记录下</strong></p>
+<h1 id="1-对称加密和非对称加密"><a href="#1-对称加密和非对称加密" class="headerlink" title="1.对称加密和非对称加密"></a>1.对称加密和非对称加密</h1><ul>
+<li><p>对称加密：<br>速度快，最简单的加密方式，加密和解密都是运用同一个密钥，缺点在通讯时代中，在不安全的网络传输用密钥容易被窃取，监听。</p>
+</li>
+<li><p>非对称加密：<br>加密使用的是一对密钥，一个公钥，一个私钥；私钥在一方安全保管，不可对外泄漏，而公钥可以发送给任何人，用公钥进行加密，私钥进行解密。缺点这种不对称加密耗时</p>
+</li>
+</ul>
+<h1 id="2-加密通讯原理与过程"><a href="#2-加密通讯原理与过程" class="headerlink" title="2.加密通讯原理与过程"></a>2.加密通讯原理与过程</h1><h2 id="1-作用"><a href="#1-作用" class="headerlink" title="1.作用"></a>1.作用</h2><ul>
+<li>若不使用SSL/TLS的HTTP通讯，就是不加密通讯，即明文传输，存在三大风险</li>
+</ul>
+<p><strong>（1） 窃听风险（eavesdropping）：第三方可以获知通信内容。</strong></p>
+<p><strong>（2） 篡改风险（tampering）：第三方可以修改通信内容。</strong></p>
+<p><strong>（3） 冒充风险（pretending）：第三方可以冒充他人身份参与通信。</strong></p>
+<ul>
+<li>SSL/TLS协议是为了解决这三大风险而设计的，希望达到：</li>
+</ul>
+<p><strong>（1） 所有信息都是加密传播，第三方无法窃听。</strong></p>
+<p><strong>（2） 具有校验机制，一旦被篡改，通信双方会立刻发现。</strong></p>
+<p><strong>（3） 配备身份证书，防止身份被冒充。</strong></p>
+<h1 id="2-基本运行过程"><a href="#2-基本运行过程" class="headerlink" title="2.基本运行过程"></a>2.基本运行过程</h1><p>SSL/TLS协议的基本思路是采用公钥加密法，也就是说，客户端先向服务器端索要公钥，然后用公钥加密信息，服务器收到密文后，用自己的私钥解密。</p>
+<p>但是，这里有两个问题。</p>
+<p><strong>（1）如何保证公钥不被篡改？</strong><br>解决方法：将公钥放在数字证书中。只要证书是可信的，公钥就是可信的。</p>
+<p><strong>（2）公钥加密计算量太大，如何减少耗用的时间？</strong><br>解决方法：每一次对话（session），客户端和服务器端都生成一个”对话密钥”（session key），用它来加密信息。由于”对话密钥”是对称加密，所以运算速度非常快，而服务器公钥只用于加密”对话密钥”本身，这样就减少了加密运算的消耗时间。</p>
+<p>所以SSL/TLS建立连接的详细过程如下：</p>
+<h2 id="1-客户端请求："><a href="#1-客户端请求：" class="headerlink" title="1.客户端请求："></a>1.客户端请求：</h2><p>首先，客户端（通常是浏览器）先向服务器发出加密通信的请求，这被叫做ClientHello请求。<br>在这一步，客户端主要向服务器提供以下信息：<br>（1） 支持的协议版本，比如TLS 1.0版。</p>
+<p>（2） 一个客户端生成的随机数，稍后用于生成”对话密钥”。</p>
+<p>（3） 支持的加密方法，比如RSA公钥加密。</p>
+<p>（4） 支持的压缩方法。</p>
+<h2 id="2-服务器回应："><a href="#2-服务器回应：" class="headerlink" title="2.服务器回应："></a>2.服务器回应：</h2><p>服务器收到客户端请求后，向客户端发出回应，这叫做SeverHello。<br>服务器的回应包含以下内容：<br>（1） 确认使用的加密通信协议版本。如果浏览器与服务器支持的版本不一致，服务器关闭加密通信。</p>
+<p>（2） 一个服务器生成的随机数，稍后用于生成”对话密钥”。</p>
+<p>（3） 确认使用的加密方法，比如RSA公钥加密。</p>
+<p>（4） 服务器证书。</p>
+<h2 id="3-客户端回应："><a href="#3-客户端回应：" class="headerlink" title="3.客户端回应："></a>3.客户端回应：</h2><p>若客户端收到回应后，发现服务器给的证书是不可信机构，或书中的域名与实际域名不一致、或者证书已经过期，就会向访问者显示一个警告，由其选择是否还要继续通信。</p>
+<p>如果证书没有问题，客户端就会从证书中取出服务器的公钥。然后，向服务器发送下面三项信息。<br>（1） 一个随机数。该随机数用服务器公钥加密，防止被窃听。</p>
+<p>（2） 编码改变通知，表示随后的信息都将用双方商定的加密方法和密钥发送。</p>
+<p>（3） 客户端握手结束通知，表示客户端的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供服务器校验。</p>
+<h2 id="4-服务端回应："><a href="#4-服务端回应：" class="headerlink" title="4.服务端回应："></a>4.服务端回应：</h2><p>服务器收到客户端的第三个随机数之后，计算生成本次会话所用的”会话密钥”。然后，向客户端最后发送下面信息。<br>（1）编码改变通知，表示随后的信息都将用双方商定的加密方法和密钥发送。</p>
+<p>（2）服务器握手结束通知，表示服务器的握手阶段已经结束。这一项同时也是前面发送的所有内容的hash值，用来供客户端校验。</p>
+<p>到此，整个https握手就结束，接下来就是客户端和服务端的加密通讯。</p>
+<h1 id="3-openssl的使用及证书的生成"><a href="#3-openssl的使用及证书的生成" class="headerlink" title="3.openssl的使用及证书的生成"></a>3.openssl的使用及证书的生成</h1><ul>
+<li><p>KEY 通常指私钥。</p>
+</li>
+<li><p>CSR 是Certificate Signing Request的缩写，即证书签名请求，这不是证书，可以简单理解成公钥，生成证书时要把这个提交给权威的证书颁发机构。</p>
+</li>
+<li><p>CRT 即 certificate的缩写，即证书。</p>
+</li>
+<li><p>X.509 是一种证书格式.对X.509证书来说，认证者总是CA或由CA指定的人，一份X.509证书是一些标准字段的集合，这些字段包含有关用户或设备及其相应公钥的信息。</p>
+</li>
+<li><p>X.509的证书文件，一般以.crt结尾，根据该文件的内容编码格式，可以分为以下二种格式：</p>
+<ul>
+<li><p>PEM - Privacy Enhanced Mail,打开看文本格式,以”—–BEGIN…”开头, “—–END…”结尾,内容是BASE64编码.<br>Apache和*NIX服务器偏向于使用这种编码格式.</p>
+</li>
+<li><p>DER - Distinguished Encoding Rules,打开看是二进制格式,不可读.Java和Windows服务器偏向于使用这种编码格式</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="给自己颁发证书"><a href="#给自己颁发证书" class="headerlink" title="给自己颁发证书"></a>给自己颁发证书</h2><p>1.生成私钥KEY<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl genrsa -des3 -out server.key 2048</div></pre></td></tr></table></figure></p>
+<p>这一步执行完以后，cert目录下会生成server.key文件</p>
+<p>2.生成证书请求文件CSR<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl req -new -key server.key -out server.csr</div></pre></td></tr></table></figure></p>
+<p>要注意的是Common Name这里，要填写成使用SSL证书(即：https协议)的域名或主机名</p>
+<ol>
+<li>生成CA的证书(可以用来帮助人家用自己的key签名)<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">openssl req -new -x509 -key server.key -out ca.crt -days 3650</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>前面提过X.509证书的认证者总是CA或由CA指定的人，所以得先生成一个CA的证书</p>
+<ol>
+<li>最后用第3步的CA证书给自己颁发一个证书玩玩<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">openssl x509 -req -days 3650 -<span class="keyword">in</span> server.csr \</div><div class="line">  -CA ca.crt -CAkey server.key \</div><div class="line">  -CAcreateserial -out server.crt</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>server.crt就是我们需要的证书。当然，如果要在google等浏览器显示出安全的绿锁标志，自己颁发的证书肯定不好使，得花钱向第三方权威证书颁发机构申请(即：第4步是交给权威机构来做，我们只需要提交server.key、server.csr，当然现在也有免费的，只是有效期可能比较短)</p>
+<h2 id="查看证书信息"><a href="#查看证书信息" class="headerlink" title="查看证书信息"></a>查看证书信息</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 查看KEY信息</span></div><div class="line">&gt; openssl rsa -noout -text -<span class="keyword">in</span> myserver.key</div><div class="line"></div><div class="line"><span class="comment"># 查看CSR信息</span></div><div class="line">&gt; openssl req -noout -text -<span class="keyword">in</span> myserver.csr</div><div class="line"></div><div class="line"><span class="comment"># 查看证书信息</span></div><div class="line">&gt; openssl x509 -noout -text -<span class="keyword">in</span> ca.crt</div><div class="line"></div><div class="line"><span class="comment"># 去除key的密码保护</span></div><div class="line">&gt; openssl rsa -<span class="keyword">in</span> myserver.key -out server.key.insecure</div></pre></td></tr></table></figure>
+<p>参考资料:<br><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="external">阮一峰</a><br><a href="https://www.cnblogs.com/yjmyzz/p/openssl-tutorial.html" target="_blank" rel="external">菩提树下的杨过</a></p>
+</div><div class="tags"><a href="/tags/openssl/">openssl</a></div><div class="post-nav"><a href="/2018/05/02/curl/" class="next">curl命令</a></div><div id="valine"></div><head><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine/dist/Valine.min.js"></script></head><body><div id="comment"></div></body><script>new Valine({
+    el: '#comment', 
+    verify: true,
+    notify: true,
+    appId: 'UDU8rUAXRYDzaX1dalrUsI7I-gzGzoHsz', 
+    appKey: 'LaJ40koNa7W0UnihFodxDnsx', 
+    placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!'
+});
+
+
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/linux-nginx/" style="font-size: 15px;">linux nginx</a> <a href="/tags/ss/" style="font-size: 15px;">ss</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/awk/" style="font-size: 15px;">awk</a> <a href="/tags/阅读/" style="font-size: 15px;">阅读</a> <a href="/tags/curl/" style="font-size: 15px;">curl</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/github/" style="font-size: 15px;">github</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/nodejs/" style="font-size: 15px;">nodejs</a> <a href="/tags/日常/" style="font-size: 15px;">日常</a> <a href="/tags/squid/" style="font-size: 15px;">squid</a> <a href="/tags/vpn/" style="font-size: 15px;">vpn</a> <a href="/tags/saltstack/" style="font-size: 15px;">saltstack</a> <a href="/tags/sed/" style="font-size: 15px;">sed</a> <a href="/tags/sar/" style="font-size: 15px;">sar</a> <a href="/tags/terminal/" style="font-size: 15px;">terminal</a> <a href="/tags/shadowsocks/" style="font-size: 15px;">shadowsocks</a> <a href="/tags/vim/" style="font-size: 15px;">vim</a> <a href="/tags/tomcat/" style="font-size: 15px;">tomcat</a> <a href="/tags/openssl/" style="font-size: 15px;">openssl</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/06/08/openssl/">openssl</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/02/curl/">curl命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/17/saltstack/">saltstack</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/29/mongdb/">mongodb和pymongo模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/27/code/">encode()和decode()函数</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/26/requests/">requests 模块</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/02/04/essay/">白夜行</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/24/sar/">sar</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/18/awk/">awk</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/04/Economics/">理财</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2018 <a href="/." rel="nofollow">熙风.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
